@@ -28,6 +28,6 @@ app.use('/user', users);
 app.use('/api', posts);
 
 
-//app.listen(process.env.PORT || 8081)
-app.listen(8081);
+app.listen(process.env.PORT || 8081)
+//app.listen(8081);
 console.log(process.env.port);
