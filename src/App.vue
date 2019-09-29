@@ -1,29 +1,77 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+    <Navbar :key="$route.fullPath"></Navbar>
+    <div class="container-fluid">
+      <router-view></router-view>
     </div>
-    <router-view/>
   </div>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
+<script>
+import Navbar from "./components/Partials/Navbar";
+export default {
+  name: "app",
+  components: { Navbar},
+  data() {
+    return {
+      isLogged: this.checkIfIsLogged()
+    };
+  },
+  watch: {
+    isLogged(val) {
+      this.isLogged = val;
     }
+  },
+  methods: {
+    forceRerender() {
+      this.isLogged = this.checkIfIsLogged();
+    },
+    checkIfIsLogged() {
+      let token = localStorage.getItem("token");
+      if (token) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  },
+  mounted() {
+    this.checkIfIsLogged();
   }
+};
+</script>
+<style>
+html,
+body {
+  margin: 0;
+}
+.bg-vuerest {
+  /* background: rgba(93, 219, 226,1);*/
+  background: rgba(93, 213, 226, 1);
+}
+button.bg-vuerest,
+input[type="submit"].bg-vuerest {
+  background: #0ac18e;
+  color: white;
+}
+/*Navbar style*/
+.navbar {
+  padding: 0rem 1rem;
+  border-bottom: 1px solid lightgrey;
+}
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 1);
+  font-weight: 500;
+}
+.nav-item > .router-link-exact-active {
+  background: rgba(72, 195, 202, 1);
+}
+/*Footer*/
+#footer {
+  clear: both;
+  margin-top: -24px;
+  position: relative;
+  bottom: 0;
+  text-align: center;
 }
 </style>

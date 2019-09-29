@@ -15,15 +15,12 @@ npm run serve
 npm run build
 ```
 
-### Run your tests
+### Run node server
 ```
-npm run test
+npm run server
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+* Modify/create the .env.sample to .env and put mongoDB database info
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
