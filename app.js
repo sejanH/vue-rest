@@ -28,6 +28,12 @@ app.use('/user', users);
 app.use('/api', posts);
 
 
-app.listen(process.env.PORT || 8081)
-//app.listen(8081);
+app.use(express.static(__dirname + "/dist/"));
+app.get(/.*/, function(req, res) {
+  res.sendfile(__dirname + "/dist/index.html");
+});
+
+
+//app.listen(process.env.PORT || 8081)
+app.listen(8081);
 console.log(process.env.port);

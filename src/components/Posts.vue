@@ -1,84 +1,74 @@
 <template>
-  <div>
-    <div id="Post" class="row justify-content-center">
-      <div class="col-md-3" id="Post-list">
-        <div style="display:block;">
-          <h6 style="display: inline-block;">Select one</h6>
-          <button
-          v-if="$route.name=='posts'"
-          @click="$router.push({name:'new-post'})"
-          class="btn bg-vuerest btn-xs"
-          title="Add new"
-          >&#x2725;</button>
-          <button
-          v-if="$route.name == 'new-post'"
-          @click="$router.go(-1)"
-          class="btn bg-vuerest btn-xs"
-          title="Back"
-          >&#x276E;&#x276E;</button>
-        </div>
-        <div class="scrollbar">
-          <div class="handle">
-            <div class="mousearea"></div>
-          </div>
-        </div>
-
-        <div class="frame smart" id="smart" v-if="parentPost != -1">
-          <ul class="items">
-            <li
-            v-for="(post) in parentPost"
-            v-bind:key="post._id"
-            @click="showPost(post._id)"
-            :class="[$route.name=='my-posts'?'':'disabled']"
-            >
-            <span class="PostActions" v-if="selectedPost[0]._id==post._id">
-              <button class="btn btn-xs bg-danger" @click="deletePost(post._id)">X</button>
-            </span>
-            <small>{{post.title }}</small>
-          </li>
-        </ul>
+  <div id="post" class="row justify-content-center">
+    <div class="col-md-3" id="post-list">
+      <div style="display:block;">
+        <h6 style="display: inline-block;">Select one</h6>
+        <button
+        v-if="$route.name=='posts'"
+        @click="$router.push({name:'new-post'})"
+        class="btn bg-vuerest btn-xs"
+        title="Add new"
+        >&#x2725;</button>
+        <button
+        v-if="$route.name == 'new-post'"
+        @click="$router.go(-1)"
+        class="btn bg-vuerest btn-xs"
+        title="Back"
+        >&#x276E;&#x276E;</button>
       </div>
-    </div>
-    <br />
-    <div class="col-md-8 col-xs-11 col-sm-11" v-if="$route.name=='Post'">
-      <table class="table table-borderless table-sm" v-if="selectedPost.length !== 0">
-        <tr id="Post">
-          <td
-          :class="[selectedPost[0].deleted ? 'strike':'','']"
-          style="font-size: 1.15rem;font-weight: 600"
+      <div class="scrollbar">
+        <div class="handle">
+          <div class="mousearea"></div>
+        </div>
+      </div>
+      <div class="frame smart" id="smart" v-if="parentPost != -1">
+        <ul class="items">
+          <li
+          v-for="post in posts"
+          v-bind:key="post._id"
+          @click="showPost(post._id)"
+          :class="[$route.name=='my-posts'?'':'disabled']"
           >
-          {{selectedPost[0].title}}-
-          <small>{{selectedPost[0].body}}</small>
-        </td>
+          <span class="postActions" >
+            <button class="btn btn-xs bg-danger" @click="deletePost(post._id)">X</button>
+          </span>
+          <small>{{ post.title }}</small>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <br />
+  <div class="col-md-8 col-xs-11 col-sm-11" v-if="$route.name=='posts'">
+    <table class="table table-borderless table-sm" v-if="selectedPost.length !== 0">
+      <tr id="post">
         <td
-        style="float:right;font-size:0.75rem;display : flex;align-items : center;"
-        >{{selectedPost[0].created_att}}</td>
-        <td>
-          <button class="btn btn-xs bg-vuerest" title="Add new task" @click="addTask">&#x2724;</button>
-        </td>
-      </tr>
-    </table>
-    <div v-if="parentPost.length > 0 && parentPost != -1">
-      <button
-      v-if="selectedPost[1].length > 0"
-      class="btn bg-vuerest btn-block"
-      @click="SaveChanges(selectedPost[0]._id)"
-      :disabled="!SaveChangesEnabled"
-      >Save changes</button>
-    </div>
-    <div class="text-center centered" v-if="parentPost != -1 && parentPost.length == 0">
-      <div class="spinner-grow text-danger" role="status">
-        <span class="sr-only">Loading...</span>
-      </div>
-    </div>
-    <div class="alert alert-warning" role="alert" v-if="parentPost == -1">
-      Hi No Posts Found by your name
-      <router-link :to="{name:'new-post'}">create one now</router-link>
+        :class="[selectedPost[0].deleted ? 'strike':'','']"
+        style="font-size: 1.15rem;font-weight: 600;"
+        >
+        {{selectedPost[0].title}}
+      </td>
+      <td
+      style="float:right;font-size:0.75rem;display : flex;align-items : center;"
+      >{{selectedPost[0].created_att}}</td>
+    </tr><hr/>
+    <tr>
+      <td v-html="selectedPost[0].body">
+        {{selectedPost[0].body}}
+      </td>
+    </tr>
+  </table>
+  <div class="text-center centered" v-if="parentPost != -1 && parentPost.length == 0">
+    <div class="spinner-grow text-danger" role="status">
+      <span class="sr-only">Loading...</span>
     </div>
   </div>
-  <div class="col-md-8 col-xs-11 col-sm-11" v-else>
-    <router-view></router-view>
+  <div class="alert alert-warning" role="alert" v-if="parentPost == -1">
+    Hi No Posts Found by your name
+    <router-link :to="{name:'new-post'}">create one now</router-link>
   </div>
+</div>
+<div class="col-md-8 col-xs-11 col-sm-11" v-else>
+  <router-view></router-view>
 </div>
 </div>
 </template>
@@ -88,19 +78,15 @@
     name: "posts",
     data() {
       return {
-        Posts: [],
+        posts: [],
         list: [],
         parentPost: [],
         selectedPost: [],
-        editable: true,
       };
     },
     watch: {
       selectedPost(val) {
         this.selectedPost = val;
-      },
-      SaveChangesEnabled(val) {
-        this.SaveChangesEnabled = val;
       }
     },
     created() {
@@ -111,14 +97,9 @@
         data.forEach((currentValue) => {
           let m = new Date(parseInt(currentValue.created_at));
           currentValue.created_att = m.getFullYear() +"-" + m.getMonth() + "-" + m.getDate() +" " + m.getHours() + ":" +m.getMinutes() + ":" + m.getSeconds();
-          currentValue.tasks.forEach(val => {
-            let d = new Date(parseInt(val.created_at));
-            val.created_att =
-            d.getFullYear() + "-" + d.getMonth() + "-" + d.getDate() + " " +d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-          });
         });
       },
-      async getPost() {
+      async getPost(id = null) {
         await axios.get("http://localhost:8081/api/my-posts", {
           params: {
             token: localStorage.getItem("token")
@@ -132,39 +113,38 @@
             plugin.setAttribute("src", "/js/sly.min.js");
             plugin.async = true;
             document.head.appendChild(plugin);
-            this.Posts = res.data; 
+            this.posts = res.data; 
             this.parentPost = res.data;
-            this.dateBeautify(this.Posts);
+            this.dateBeautify(this.posts);
             if (id == null) {
-             this.showPost(this.Posts[0]._id);
-            } else {
+             this.showPost(this.posts[0]._id);
+           } else {
              this.showPost(id);
-            }
+           }
 
-          }
-        })
+         }
+       })/*
         .catch(err => {
           if (err.request.response == "expired") {
-            this.$root.$emit("expired");
-          } else if (err.request.status == 0) {
-            this.getPost();
-            swal({
-              icon: "error",
-              title: "Sorry !",
-              text:
-              "Connection to server failed! Reload the page or try again later"
-            });
-          }
-        });
+              this.$root.$emit("expired");
+            } else if (err.request.status == 0) {
+              this.getPost();
+              swal({
+                icon: "error",
+                title: "Sorry !",
+                text:
+                "Connection to server failed! Reload the page or try again later"
+              });
+            }
+          });*/
       },
-      showPost(PostId) {
-        console.log("Post:"+PostId)
+      showPost(postId) {
         this.selectedPost = [];
-        let Post = [];
-        Post[0] = this.Posts.filter(data => data._id == PostId)[0];
-        this.selectedPost = Post;
+        let post = [];
+        post[0] = this.posts.filter(data => data._id == postId)[0];
+        this.selectedPost = post;
       },
-      deletePost(PostId) {
+      deletePost(postId) {
         swal("Delete the Post?", {
           buttons: {
             cancel: "No!",
@@ -179,7 +159,7 @@
             axios
             .post("http://localhost:8081/api/post/delete", {
               token: localStorage.getItem("token"),
-              PostId
+              postId
             })
             .then(res => {
               this.getPost();
@@ -196,14 +176,10 @@
           delete currentValue.created_att;
           currentValue.tasks.forEach((val) => {
            delete val.created_att;
-        });
+         });
         });
       },
     },
-    mounted() {
-    },
-    computed: {
-    }
   };
 </script>
 
@@ -324,13 +300,13 @@ button.btn-xs {
   font-weight: 400;
   float: right;
 }
-.PostActions {
+.postActions {
   float: right;
 }
-.items > li .PostActions {
+.items > li .postActions {
   opacity: 0;
 }
-.items > li:hover .PostActions {
+.items > li:hover .postActions {
   opacity: 1;
   cursor: pointer;
 }

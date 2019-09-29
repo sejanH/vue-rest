@@ -14,7 +14,7 @@ router.get('/my-posts', (req, res) => {
             Post.findPostByUserId(data.id, (err, post) => {
                 if (err) throw err;
                 if (post.length > 0) {
-                    // dateBeautify(post);
+                  //  dateBeautify(post);
                 }
                 res.send(post);
             });
@@ -75,9 +75,6 @@ function dateBeautify(data) {
         currentValue.tasks.forEach((val) => {
             let d = new Date(parseInt(val.created_at));
             val.created_at = d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate() + '  ' + d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-            if (val.tasks.length > 0) {
-                dateBeautify(val.tasks);
-            }
         });
 
     });
@@ -92,9 +89,7 @@ function dateParse(data) {
         currentValue.tasks.forEach((val) => {
             let d = "'" + new Date(val.created_at) + "'";
             val.created_at = Date.parse(d);
-            if (val.tasks.length > 0) {
-                dateParse(val.tasks);
-            }
+           
         });
 
     });

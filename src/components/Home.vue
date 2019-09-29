@@ -2,7 +2,7 @@
   <div id="app" class="row justify-content-center">
     <center>
       <div class="jumbotron">
-        Goto <router-link class="btn btn-link" to="/my-posts">my posts</router-link>
+        Welcome
       </div>
     </center>
   </div>
